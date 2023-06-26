@@ -2,38 +2,68 @@ import PropTypes from 'prop-types'
 import MainModal from 'components/modal/MainModal'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
+import httpRequest from 'utils/httpRequest'
+import { notification } from 'antd'
+
+const handleNotification = (type, title, text) => {
+    notification[type]({
+        message: title,
+        description: text,
+        zIndex: 99999999999,
+        placement: 'topRight',
+    })
+}
 
 const AddModal = ({ open, modalToggle, onSuccess }) => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const is_active = useState(true)
+    // const is_active = useState(true)
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        const specialistData = { name, email, username, password, is_active }
+        const specialistData = {
+            name,
+            email,
+            username,
+            password,
+        }
 
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/user/store',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(specialistData),
-                }
-            )
+            // const response = await fetch(
+            //     'http://127.0.0.1:8000/api/user/store',
+            //     {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify(specialistData),
+            //     }
+            // )
 
-            const data = await response.json()
+            // const data = await response.json()
 
-            if (data.status == true) {
-                alert('data berhasil masuk')
-            }
+            // if (data.status == true) {
+            //     alert('data berhasil masuk')
+            // }
+            await httpRequest({
+                url: 'admin/user',
+                method: 'post',
+                data: specialistData,
+            }).then((response) => {
+                handleNotification(
+                    'success',
+                    'Successfully',
+                    response?.data?.results?.message || 'Success'
+                )
+            })
 
             setName('')
+            setUsername('')
+            setPassword('')
+            setEmail('')
 
             modalToggle()
             onSuccess()

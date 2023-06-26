@@ -5,25 +5,44 @@ import { Link } from 'react-router-dom'
 import TableDataGrid from 'components/table/TableDataGrid'
 import { useEffect, useState } from 'react'
 import DoctorAction from './DoctorAction'
+import httpRequest from 'utils/httpRequest'
 
 const DoctorAdmin = () => {
     const [data, setData] = useState([])
 
     const fetchData = async () => {
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/dokter/data'
-            )
-            const jsonData = await response.json()
-            if (jsonData.status === true) {
-                const formattedData = jsonData.data.map((item, index) => ({
-                    ...item,
-                    no: index + 1,
-                }))
-                setData(formattedData)
-            } else {
-                console.log('Error:', jsonData.error)
-            }
+            // const response = await fetch(
+            //     'http://127.0.0.1:8000/api/dokter/data'
+            // )
+            // const jsonData = await response.json()
+            // if (jsonData.status === true) {
+            //     const formattedData = jsonData.data.map((item, index) => ({
+            //         ...item,
+            //         no: index + 1,
+            //     }))
+            //     setData(formattedData)
+            // } else {
+            //     console.log('Error:', jsonData.error)
+            // }
+            await httpRequest({
+                url: 'admin/doctor',
+                method: 'get',
+                params: {
+                    page: 0,
+                    limit: 10,
+                },
+            }).then((response) => {
+                let datas = response?.data?.results.data?.rows
+                datas = datas.map((item, index) => {
+                    return {
+                        ...item,
+                        no: ++index,
+                    }
+                })
+
+                setData(datas)
+            })
         } catch (error) {
             console.log('Error:', error)
         }
