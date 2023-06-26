@@ -5,6 +5,7 @@ import AddModal from './Modal/AddModal'
 import { useEffect, useState } from 'react'
 import SpecialistAction from './SpecialistAction'
 import TableDataGrid from 'components/table/TableDataGrid'
+import httpRequest from 'utils/httpRequest'
 
 const SpecialistAdmin = () => {
     const [add, setAdd] = useState(false)
@@ -14,19 +15,37 @@ const SpecialistAdmin = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/spesialis/data'
-            )
-            const jsonData = await response.json()
-            if (jsonData.status === true) {
-                const formattedData = jsonData.data.map((item, index) => ({
-                    ...item,
-                    no: index + 1,
-                }))
-                setData(formattedData)
-            } else {
-                console.log('Error:', jsonData.error)
-            }
+            // const response = await fetch(
+            //     'http://127.0.0.1:8000/api/spesialis/data'
+            // )
+            // const jsonData = await response.json()
+            // if (jsonData.status === true) {
+            //     const formattedData = jsonData.data.map((item, index) => ({
+            //         ...item,
+            //         no: index + 1,
+            //     }))
+            //     setData(formattedData)
+            // } else {
+            //     console.log('Error:', jsonData.error)
+            // }
+            await httpRequest({
+                url: 'admin/specialist',
+                method: 'get',
+                params: {
+                    page: 0,
+                    limit: 10,
+                },
+            }).then((response) => {
+                let datas = response.data.results.data.rows
+                datas = datas.map((item, index) => {
+                    return {
+                        ...item,
+                        no: index + 1,
+                    }
+                })
+
+                setData(datas)
+            })
         } catch (error) {
             console.log('Error:', error)
         }

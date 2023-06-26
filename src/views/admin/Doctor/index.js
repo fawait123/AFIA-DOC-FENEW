@@ -2,13 +2,15 @@ import { Box, Button, Typography } from '@mui/material'
 import Admin from '..'
 import { Add } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
-import TableDataGrid from 'components/table/TableDataGrid'
+// import TableDataGrid from 'components/table/TableDataGrid'
+import { Table, Card, Tag } from 'antd'
 import { useEffect, useState } from 'react'
 import DoctorAction from './DoctorAction'
 import httpRequest from 'utils/httpRequest'
 
 const DoctorAdmin = () => {
     const [data, setData] = useState([])
+    const [loading, setLoading] = useState(false)
 
     const fetchData = async () => {
         try {
@@ -25,6 +27,7 @@ const DoctorAdmin = () => {
             // } else {
             //     console.log('Error:', jsonData.error)
             // }
+            setLoading(true)
             await httpRequest({
                 url: 'admin/doctor',
                 method: 'get',
@@ -38,10 +41,12 @@ const DoctorAdmin = () => {
                     return {
                         ...item,
                         no: ++index,
+                        id: ++index,
                     }
                 })
 
                 setData(datas)
+                setLoading(false)
             })
         } catch (error) {
             console.log('Error:', error)
@@ -54,32 +59,90 @@ const DoctorAdmin = () => {
 
     const columns = [
         {
-            field: 'no',
-            headerName: 'No',
-            width: 70,
+            dataIndex: 'NIK',
+            title: 'NIK',
+            key: 'NIK',
+            fixed: 'left',
         },
         {
-            field: 'name',
-            headerName: 'Nama',
-            flex: 1,
+            dataIndex: 'name',
+            title: 'Nama',
+            key: 'name',
+            fixed: 'left',
+            render: (text, record) => {
+                return (
+                    <>
+                        {record.name +
+                            ', ' +
+                            record.initialDegree +
+                            '., ' +
+                            record.finalDegree}
+                    </>
+                )
+            },
         },
         {
-            field: 'email',
-            headerName: 'Email',
-            flex: 1,
+            dataIndex: 'birthdate',
+            title: 'Birthdate',
+            key: 'birthdate',
+            render: (text, record) => {
+                return <>{record.placebirth + ' ' + record.birtdate}</>
+            },
         },
         {
-            field: 'phone',
-            headerName: 'Telp',
-            flex: 1,
+            dataIndex: 'gender',
+            title: 'Gender',
+            key: 'gender',
+            render: (text, record) => {
+                return (
+                    <Tag color={record.gender == 'L' ? 'cyan' : 'red'}>
+                        {record.gender == 'L' ? 'Laki Laki' : 'Perempuan'}
+                    </Tag>
+                )
+            },
         },
         {
-            field: 'actions',
-            headerName: '',
-            type: 'actions',
-            width: 150,
-            renderCell: (params) => (
-                <DoctorAction id={params.id} onSuccess={fetchData} />
+            dataIndex: 'email',
+            title: 'Email',
+            key: 'email',
+        },
+        {
+            dataIndex: 'phone',
+            title: 'Telp',
+            key: 'phone',
+        },
+        {
+            dataIndex: 'religion',
+            title: 'Religion',
+            key: 'religion',
+        },
+        {
+            dataIndex: 'address',
+            title: 'Address',
+            key: 'address',
+            width: '30%',
+            render: (text, record) => {
+                return (
+                    <p>
+                        {record.addresses[0].province.name +
+                            ', ' +
+                            record.addresses[0].district.name +
+                            ', ' +
+                            record.addresses[0].subdistrict.name +
+                            ', ' +
+                            record.addresses[0].village.name +
+                            ', ' +
+                            record.addresses[0].rtrw}
+                    </p>
+                )
+            },
+        },
+        {
+            dataIndex: 'actions',
+            title: 'Actions',
+            fixed: 'right',
+            render: (text, record) => (
+                <DoctorAction id={record.id} onSuccess={fetchData} />
             ),
         },
     ]
@@ -129,7 +192,17 @@ const DoctorAdmin = () => {
                     </Button>
                 </Link>
             </Box>
-            <TableDataGrid data={data} columns={columns} />
+            {/* <TableDataGrid data={data} columns={columns} /> */}
+            <Card size="default">
+                <Table
+                    columns={columns}
+                    dataSource={data}
+                    loading={loading}
+                    scroll={{
+                        x: 1300,
+                    }}
+                />
+            </Card>
         </Admin>
     )
 }
