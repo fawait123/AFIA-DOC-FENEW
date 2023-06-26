@@ -54,6 +54,9 @@ const MainLayout = ({ children }) => {
                 ref={appBarRef}
                 elevation={0}
                 sx={{ bgcolor: '#FFFFFF', borderBottom: '1px #E0E0E0 solid' }}
+                style={{
+                    zIndex: 10,
+                }}
             >
                 <Toolbar>
                     <Header

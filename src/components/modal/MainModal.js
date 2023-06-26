@@ -19,6 +19,9 @@ const MainModal = ({ width, open, modalToggle, children }) => {
             <Modal
                 open={open}
                 onClose={modalToggle}
+                style={{
+                    zIndex: 999,
+                }}
                 closeAfterTransition
                 slots={{ backdrop: Backdrop }}
                 slotProps={{

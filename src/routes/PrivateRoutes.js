@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import { Navigate, useLocation } from 'react-router-dom'
 
 const PrivateRoutes = ({ children }) => {
-    const token = sessionStorage.getItem('token') !== null
+    const token = window.localStorage.getItem('token')
 
     const location = useLocation
 

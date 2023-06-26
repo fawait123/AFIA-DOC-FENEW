@@ -2,6 +2,17 @@ import PropTypes from 'prop-types'
 import MainModal from 'components/modal/MainModal'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
+import httpRequest from 'utils/httpRequest'
+import { notification } from 'antd'
+
+const handleNotification = (type, title, text) => {
+    notification[type]({
+        message: title,
+        description: text,
+        zIndex: 99999999999,
+        placement: 'topRight',
+    })
+}
 
 const EditModal = ({ open, modalToggle, id, onSuccess }) => {
     const [name, setName] = useState('')
@@ -9,18 +20,33 @@ const EditModal = ({ open, modalToggle, id, onSuccess }) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
+    // const getData = async () => {
+    //     try {
+    //         const response = await fetch(
+    //             'http://127.0.0.1:8000/api/user/edit/' + id
+    //         )
+    //         const data = await response.json()
+    //         setName(data.data.name)
+    //         setEmail(data.data.email)
+    //         setUsername(data.data.username)
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
+
     const getData = async () => {
-        try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/user/edit/' + id
-            )
-            const data = await response.json()
-            setName(data.data.name)
-            setEmail(data.data.email)
-            setUsername(data.data.username)
-        } catch (error) {
-            console.log(error)
-        }
+        httpRequest({
+            url: 'admin/user',
+            type: 'get',
+            params: {
+                id: id,
+            },
+        }).then((response) => {
+            let data = response.data.results.data.rows
+            setName(data[0].name)
+            setEmail(data[0].email)
+            setUsername(data[0].username)
+        })
     }
 
     useEffect(() => {
@@ -33,24 +59,42 @@ const EditModal = ({ open, modalToggle, id, onSuccess }) => {
         const specialistData = { id, name, username, password, email }
 
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/user/edit',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(specialistData),
-                }
-            )
+            // const response = await fetch(
+            //     'http://127.0.0.1:8000/api/user/edit',
+            //     {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify(specialistData),
+            //     }
+            // )
 
-            const data = await response.json()
+            // const data = await response.json()
 
-            if (data.status == true) {
-                alert('data berhasil masuk')
-            }
+            // if (data.status == true) {
+            //     alert('data berhasil masuk')
+            // }
+
+            await httpRequest({
+                url: 'admin/user',
+                method: 'PUT',
+                params: {
+                    id: id,
+                },
+                body: specialistData,
+            }).then((response) => {
+                handleNotification(
+                    'success',
+                    'Error',
+                    response?.data?.results?.message || 'Success'
+                )
+            })
 
             setName('')
+            setUsername('')
+            setPassword('')
+            setEmail('')
 
             modalToggle()
 

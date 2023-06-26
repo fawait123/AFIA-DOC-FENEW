@@ -11,47 +11,69 @@ import {
 } from '@mui/material'
 import logo from '../../../../assets/images/logo.png'
 import { useState } from 'react'
+import httpRequest from 'utils/httpRequest'
 
 const LoginModal = ({ open, modalToggle, registerToggle }) => {
     const [username, setUsername] = useState('')
 
     const [password, setPassword] = useState('')
 
-    const handleSubmit = async (e) => {
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault()
+
+    //     const loginData = { username, password }
+
+    //     try {
+    //         const response = await fetch('http://127.0.0.1:8000/api/login', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify(loginData),
+    //         })
+
+    //         const data = await response.json()
+
+    //         sessionStorage.setItem('token', data.token)
+    //         sessionStorage.setItem('user', JSON.stringify(data.user))
+
+    //         setUsername('')
+    //         setPassword('')
+
+    //         const user = JSON.parse(sessionStorage.getItem('user'))
+
+    //         if (user && user.name === 'ananta') {
+    //             sessionStorage.setItem('admin', true)
+    //             window.location.href = '/admin/dashboard'
+    //         } else {
+    //             window.location.href = '/'
+    //         }
+
+    //         modalToggle()
+    //     } catch (error) {
+    //         console.log('Login Failed', error)
+    //     }
+    // }
+
+    const handleSubmitNew = async (e) => {
         e.preventDefault()
 
-        const loginData = { username, password }
+        httpRequest({
+            url: 'auth/login',
+            method: 'post',
+            data: {
+                username,
+                password,
+            },
+        }).then((response) => {
+            console.log('res', response)
+            let token = response?.data?.results?.data?.token
+            let user = response?.data?.results?.data?.user
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(loginData),
-            })
-
-            const data = await response.json()
-
-            sessionStorage.setItem('token', data.token)
-            sessionStorage.setItem('user', JSON.stringify(data.user))
-
-            setUsername('')
-            setPassword('')
-
-            const user = JSON.parse(sessionStorage.getItem('user'))
-
-            if (user && user.name === 'ananta') {
-                sessionStorage.setItem('admin', true)
-                window.location.href = '/admin/dashboard'
-            } else {
-                window.location.href = '/'
-            }
-
-            modalToggle()
-        } catch (error) {
-            console.log('Login Failed', error)
-        }
+            window.localStorage.setItem('token', token)
+            window.localStorage.setItem('user', JSON.stringify(user))
+            window.location.href = '/admin/dashboard'
+        })
     }
 
     return (
@@ -90,7 +112,7 @@ const LoginModal = ({ open, modalToggle, registerToggle }) => {
                 <Typography>Please login to your account</Typography>
             </Box>
             <Box paddingY={3}>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmitNew}>
                     <Box marginY={1}>
                         <TextField
                             required

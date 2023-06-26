@@ -22,6 +22,9 @@ const Header = ({ open, draweToggle }) => {
         <AppBar
             position="fixed"
             open={open}
+            style={{
+                zIndex: 99,
+            }}
             elevation={0}
             sx={{ bgcolor: '#FFFFFF', borderBottom: '1px #e0e0e0 solid' }}
         >
