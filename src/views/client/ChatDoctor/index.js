@@ -10,8 +10,29 @@ import {
 import MainLayout from 'layout/MainLayout'
 import SearchBox from '../Home/search/SearchBox'
 import DoctorCard from 'components/card/DoctorCard'
+import { useEffect, useState } from 'react'
+import httpRequest from 'utils/httpRequest'
 
 const ChatDoctor = () => {
+    const [data, setData] = useState([])
+
+    const getData = async () => {
+        await httpRequest({
+            url: 'admin/doctor',
+            method: 'get',
+            params: {
+                page: 0,
+                limit: 10,
+            },
+        }).then((response) => {
+            let datas = response.data.results.data.rows
+            setData(datas)
+        })
+    }
+
+    useEffect(() => {
+        getData()
+    }, [])
     return (
         <MainLayout>
             <Box
@@ -95,18 +116,15 @@ const ChatDoctor = () => {
                 }}
             >
                 <Grid container columns={2} spacing={2}>
-                    <Grid item xs={2} md={1}>
-                        <DoctorCard button="Chat" />
-                    </Grid>
-                    <Grid item xs={2} md={1}>
-                        <DoctorCard button="Chat" />
-                    </Grid>
-                    <Grid item xs={2} md={1}>
-                        <DoctorCard button="Chat" />
-                    </Grid>
-                    <Grid item xs={2} md={1}>
-                        <DoctorCard button="Chat" />
-                    </Grid>
+                    {data.map((item) => {
+                        return (
+                            <>
+                                <Grid item xs={2} md={1}>
+                                    <DoctorCard button="Chat" item={item} />
+                                </Grid>
+                            </>
+                        )
+                    })}
                 </Grid>
             </Box>
         </MainLayout>

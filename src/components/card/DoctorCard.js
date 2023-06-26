@@ -8,7 +8,8 @@ import {
     Typography,
 } from '@mui/material'
 
-const DoctorCard = ({ image, name, specialist, button }) => {
+const DoctorCard = ({ image, button, item }) => {
+    console.log('item', item)
     return (
         <Card elevation={0} sx={{ display: 'flex' }}>
             <CardMedia
@@ -26,10 +27,15 @@ const DoctorCard = ({ image, name, specialist, button }) => {
                         component="div"
                         sx={{ fontWeight: 600, marginTop: -2 }}
                     >
-                        {name ?? 'dr. Manchester United'}
+                        {'Dr. ' +
+                            item?.name +
+                            ', ' +
+                            item?.initialDegree +
+                            '., ' +
+                            item?.finalDegree}
                     </Typography>
                     <Typography color="text.secondary" component="div">
-                        {specialist ?? 'Dokter Umum'}
+                        {'Spesialis ' + item?.specialist?.name}
                     </Typography>
                 </CardContent>
                 <Box
@@ -55,6 +61,7 @@ DoctorCard.propTypes = {
     name: PropTypes.string,
     specialist: PropTypes.string,
     button: PropTypes.string,
+    item: PropTypes.object,
 }
 
 export default DoctorCard

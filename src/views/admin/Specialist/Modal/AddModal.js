@@ -2,6 +2,17 @@ import PropTypes from 'prop-types'
 import MainModal from 'components/modal/MainModal'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
+import httpRequest from 'utils/httpRequest'
+import { notification } from 'antd'
+
+const handleNotification = (type, title, text) => {
+    notification[type]({
+        message: title,
+        description: text,
+        zIndex: 99999999999,
+        placement: 'topRight',
+    })
+}
 
 const AddModal = ({ open, modalToggle }) => {
     const [name, setName] = useState('')
@@ -12,22 +23,34 @@ const AddModal = ({ open, modalToggle }) => {
         const specialistData = { name }
 
         try {
-            const response = await fetch(
-                'http://127.0.0.1:8000/api/spesialis/store',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(specialistData),
-                }
-            )
+            // const response = await fetch(
+            //     'http://127.0.0.1:8000/api/spesialis/store',
+            //     {
+            //         method: 'POST',
+            //         headers: {
+            //             'Content-Type': 'application/json',
+            //         },
+            //         body: JSON.stringify(specialistData),
+            //     }
+            // )
 
-            const data = await response.json()
+            // const data = await response.json()
 
-            if (data.status == true) {
-                alert('data berhasil masuk')
-            }
+            // if (data.status == true) {
+            //     alert('data berhasil masuk')
+            // }
+
+            await httpRequest({
+                url: 'admin/specialist',
+                method: 'post',
+                data: specialistData,
+            }).then((response) => {
+                handleNotification(
+                    'success',
+                    'Success',
+                    response?.data?.results?.message || 'Successfully'
+                )
+            })
 
             setName('')
 

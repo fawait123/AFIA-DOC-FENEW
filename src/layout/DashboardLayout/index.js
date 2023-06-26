@@ -41,7 +41,13 @@ const DashboardLayout = ({ pages, children }) => {
                     padding: 3,
                 }}
             >
-                <Box sx={{ marginTop: { xs: 4, md: 8 } }}>{children}</Box>
+                <Box
+                    sx={{
+                        marginTop: { xs: 4, md: 8 },
+                    }}
+                >
+                    {children}
+                </Box>
             </Box>
         </Box>
     )
